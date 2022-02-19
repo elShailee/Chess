@@ -1,7 +1,7 @@
 import React from 'react';
+import Piece from './Piece';
 import { StyledTile } from './styles';
-import { lib } from 'Assets/pieces/lib';
 
-export default function Tile({ x, y, tileColor, chessPiece }) {
-	return <StyledTile tileColor={tileColor}>{chessPiece && <img src={lib[chessPiece.color][chessPiece.type]} />}</StyledTile>;
+export default function Tile({ tileColor, chessPiece }) {
+	return <StyledTile tileColor={tileColor}>{chessPiece && <Piece chessPiece={chessPiece} />}</StyledTile>;
 }

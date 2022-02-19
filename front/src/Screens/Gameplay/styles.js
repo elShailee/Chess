@@ -10,3 +10,10 @@ export const StyledTile = styled.div`
 	align-items: center;
 	justify-content: center;
 `;
+
+export const StyledPiece = styled.img`
+	width: 9vmin;
+	height: 9vmin;
+	user-select: none;
+	-webkit-user-drag: none;
+`;
