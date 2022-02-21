@@ -26,31 +26,26 @@ export default function Board() {
 	};
 
 	//rendering board
-	let boardTiles = [];
-	for (let row = 0; row <= 7; row++) {
-		let rowTiles = [];
-		for (let col = 0; col <= 7; col++) {
-			const chessPiece = initialState[row][col];
-			const tileColor = (col + row) % 2 === 1 ? 'dark' : 'light';
-			rowTiles.push(<Tile x={col} y={7 - row} tileColor={tileColor} key={col + row} chessPiece={chessPiece} />);
-		}
-		rowTiles = (
-			<div key={row} style={{ display: 'flex', flexDirection: 'row' }}>
-				{rowTiles}
-			</div>
-		);
-		boardTiles.push(rowTiles);
-	}
-	boardTiles = (
+
+	const renderTile = ({ tileColor, chessPiece, key }) => <Tile tileColor={tileColor} key={key} chessPiece={chessPiece} />;
+
+	return (
 		<div
 			onMouseDown={e => grab(e)}
 			onMouseMove={e => move(e)}
 			onMouseUp={release}
 			style={{ marginLeft: '30vmin', marginTop: '10vmin' }}
 		>
-			{boardTiles}
+			{initialState.map((row, rowIndex) => (
+				<div key={rowIndex} style={{ display: 'flex', flexDirection: 'row' }}>
+					{row.map((cell, cellIndex) => {
+						const chessPiece = cell;
+						const tileColor = (cellIndex + rowIndex) % 2 === 1 ? 'dark' : 'light';
+						const cellKey = `${rowIndex}${cellIndex}`;
+						return renderTile({ tileColor, chessPiece, key: cellKey });
+					})}
+				</div>
+			))}
 		</div>
 	);
-
-	return boardTiles;
 }
