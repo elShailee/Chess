@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import Tile from './Tile';
 import initialState from './initialState';
 
 export default function Board() {
+	const boardRef = useRef(null);
+
 	//moving funcs
 	let movingPiece = null;
 
@@ -12,7 +14,17 @@ export default function Board() {
 		move(movingPiece);
 	};
 
-	const release = () => {
+	const release = e => {
+		if (!movingPiece) return;
+		const boardPos = { x: boardRef.current.offsetLeft, y: boardRef.current.offsetTop };
+		const targetPosInBoard = { x: e.clientX - boardPos.x, y: e.clientY - boardPos.y };
+		const boardSize = { width: boardRef.current.offsetWidth, height: boardRef.current.offsetHeight };
+		const tileSize = { width: boardSize.width / 8, height: boardSize.height / 8 };
+		const targetTile = {
+			x: 7 - Math.floor((boardSize.width - targetPosInBoard.x) / tileSize.width),
+			y: Math.floor((boardSize.height - targetPosInBoard.y) / tileSize.height),
+		};
+		console.log(targetTile);
 		movingPiece = null;
 	};
 
@@ -33,8 +45,9 @@ export default function Board() {
 		<div
 			onMouseDown={e => grab(e)}
 			onMouseMove={e => move(e)}
-			onMouseUp={release}
-			style={{ marginLeft: '30vmin', marginTop: '10vmin' }}
+			onMouseUp={e => release(e)}
+			style={{ marginLeft: '30vmin', marginTop: '10vmin', width: 'fit-content' }}
+			ref={boardRef}
 		>
 			{initialState.map((row, rowIndex) => (
 				<div key={rowIndex} style={{ display: 'flex', flexDirection: 'row' }}>
