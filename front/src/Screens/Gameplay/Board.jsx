@@ -1,30 +1,32 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import Tile from './Tile';
 import initialState from './initialState';
+import { copyBoardState, getTileIndexInBoard, isIndexInBoard, isSameTile } from './utils';
 
 export default function Board() {
 	const boardRef = useRef(null);
+	const [boardState, setBoardState] = useState(initialState);
 
 	//moving funcs
 	let movingPiece = null;
 
 	const grab = e => {
 		if (!e.target.className.includes('pieceImage')) return;
-		movingPiece = e.target;
+		movingPiece = { image: e.target, source: getTileIndexInBoard({ e, boardRef }) };
 		move(movingPiece);
 	};
 
 	const release = e => {
 		if (!movingPiece) return;
-		const boardPos = { x: boardRef.current.offsetLeft, y: boardRef.current.offsetTop };
-		const targetPosInBoard = { x: e.clientX - boardPos.x, y: e.clientY - boardPos.y };
-		const boardSize = { width: boardRef.current.offsetWidth, height: boardRef.current.offsetHeight };
-		const tileSize = { width: boardSize.width / 8, height: boardSize.height / 8 };
-		const targetTile = {
-			x: 7 - Math.floor((boardSize.width - targetPosInBoard.x) / tileSize.width),
-			y: Math.floor((boardSize.height - targetPosInBoard.y) / tileSize.height),
-		};
-		console.log(targetTile);
+		const targetTileIndex = getTileIndexInBoard({ e, boardRef });
+		if (isIndexInBoard(targetTileIndex)) {
+			let newBoardState = copyBoardState(boardState);
+			newBoardState[7 - targetTileIndex.y][targetTileIndex.x] =
+				newBoardState[7 - movingPiece.source.y][movingPiece.source.x];
+			if (!isSameTile(targetTileIndex, movingPiece.source))
+				newBoardState[7 - movingPiece.source.y][movingPiece.source.x] = null;
+			setBoardState(newBoardState);
+		}
 		movingPiece = null;
 	};
 
@@ -32,9 +34,9 @@ export default function Board() {
 		if (!movingPiece) return;
 		const x = e.clientX;
 		const y = e.clientY;
-		movingPiece.style.position = 'absolute';
-		movingPiece.style.left = `calc(${x}px - 4.5vmin)`;
-		movingPiece.style.top = `calc(${y}px - 4.5vmin)`;
+		movingPiece.image.style.position = 'absolute';
+		movingPiece.image.style.left = `calc(${x}px - 4.5vmin)`;
+		movingPiece.image.style.top = `calc(${y}px - 4.5vmin)`;
 	};
 
 	//rendering board
@@ -49,7 +51,7 @@ export default function Board() {
 			style={{ marginLeft: '30vmin', marginTop: '10vmin', width: 'fit-content' }}
 			ref={boardRef}
 		>
-			{initialState.map((row, rowIndex) => (
+			{boardState.map((row, rowIndex) => (
 				<div key={rowIndex} style={{ display: 'flex', flexDirection: 'row' }}>
 					{row.map((cell, cellIndex) => {
 						const chessPiece = cell;
