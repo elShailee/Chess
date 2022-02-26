@@ -5,7 +5,7 @@ export const StyledTile = styled.div`
 	height: 10vmin;
 	box-sizing: border-box;
 	border: 1px solid black;
-	background-color: ${({ tileColor }) => (tileColor === 'dark' ? 'bisque' : 'white')};
+	${({ backgroundColor }) => backgroundColor && `background-color: ${backgroundColor};`}
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -28,7 +28,7 @@ export const PieceContainer = styled.div`
 	align-items: center;
 	justify-content: center;
 	text-align: center;
-	background-color: orange;
+	/* background-color: orange; */
 	user-select: none;
 	-webkit-user-drag: none;
 `;

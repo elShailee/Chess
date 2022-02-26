@@ -16,7 +16,6 @@ export const getTileIndexInBoard = ({ e, boardRef }) => {
 		targetPos.x > boardPos.x + boardSize.x ||
 		targetPos.y > boardPos.y + boardSize.y
 	) {
-		console.warn('target position passed to getTileIndexInBoard is outside of board.');
 		return { x: -1, y: -1 };
 	}
 
@@ -42,3 +41,11 @@ export const copyBoardState = boardState => {
 };
 
 export const isSameTile = (tileIndexA, tileIndexB) => tileIndexA.x === tileIndexB.x && tileIndexA.y === tileIndexB.y;
+
+export const makePieceMove = ({ source, target, boardState, setBoardState }) => {
+	if (source.x === target.x && source.y === target.y) return;
+	let newBoardState = copyBoardState(boardState);
+	newBoardState[7 - target.y][target.x] = newBoardState[7 - source.y][source.x];
+	newBoardState[7 - source.y][source.x] = null;
+	setBoardState(newBoardState);
+};
