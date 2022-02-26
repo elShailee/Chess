@@ -27,7 +27,17 @@ export default function Board() {
 				newBoardState[7 - movingPiece.source.y][movingPiece.source.x] = null;
 			setBoardState(newBoardState);
 		}
+		if (!isIndexInBoard(targetTileIndex) || isSameTile(targetTileIndex, movingPiece.source)) {
+			resetPiecePosition(movingPiece);
+		}
 		movingPiece = null;
+	};
+
+	const resetPiecePosition = piece => {
+		const imageStyle = piece.image.style;
+		imageStyle.position = 'relative';
+		imageStyle.left = 'auto';
+		imageStyle.top = 'auto';
 	};
 
 	const move = e => {
