@@ -25,7 +25,7 @@ export default function Board() {
 	const release = e => {
 		const targetTileIndex = getTileIndexInBoard({ e, boardRef });
 
-		if (e.clientX === mouseDownPos?.x && e.clientY === mouseDownPos?.y) {
+		if (Math.abs(e.clientX - mouseDownPos.x) <= 8 && Math.abs(e.clientY - mouseDownPos.y) <= 8) {
 			if (!clickMovingPiece) {
 				setDragMovingPiece(null);
 				setHoveringTileIndex(null);
