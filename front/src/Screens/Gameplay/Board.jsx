@@ -1,92 +1,117 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import Tile from './Tile';
 import initialState from './initialState';
-import { getTileIndexInBoard, isIndexInBoard, isSameTile, makePieceMove } from './utils';
+// import { getTileIndexInBoard, isIndexInBoard, isSameTile, makePieceMove } from './utils';
+import MovesManager from './MovesManager';
+import { copyBoardState, generateTileColor } from './utils';
 
 export default function Board() {
+	const piecesClassName = 'draggablePieceImage';
 	const boardRef = useRef(null);
 	const [boardState, setBoardState] = useState(initialState);
+	const [sourceTileState, setSourceTileState] = useState(null);
+	const [targetTileState, setTargetTileState] = useState(null);
+
+	const mm = useMemo(() => {
+		const moveAction = ({ source, target }) => {
+			const newBoardState = copyBoardState(boardState);
+			newBoardState[target.y][target.x] = newBoardState[source.y][source.x];
+			newBoardState[source.y][source.y] = null;
+			setBoardState(newBoardState);
+		};
+
+		return new MovesManager({
+			droppableRef: boardRef,
+			draggablesClassName: piecesClassName,
+			draggblesPositionsMatrix: boardState,
+			moveAction,
+			setSourcePositionState: setSourceTileState,
+			setTargetPositionState: setTargetTileState,
+		});
+	}, [piecesClassName, boardState]);
 
 	//moving funcs
-	const [dragMovingPiece, setDragMovingPiece] = useState(null);
-	const [clickMovingPiece, setClickMovingPiece] = useState(null);
-	const [mouseDownPos, setMouseDownPos] = useState(null);
-	const [hoveringTileIndex, setHoveringTileIndex] = useState(null);
+	// const [dragMovingPiece, setDragMovingPiece] = useState(null);
+	// const [clickMovingPiece, setClickMovingPiece] = useState(null);
+	// const [mouseDownPos, setMouseDownPos] = useState(null);
+	// const [hoveringTileIndex, setHoveringTileIndex] = useState(null);
 
-	const grab = e => {
-		setMouseDownPos({ x: e.clientX, y: e.clientY });
-		if (!clickMovingPiece) {
-			if (!e.target.className.includes('pieceImage')) return;
-			setDragMovingPiece({ image: e.target, source: getTileIndexInBoard({ e, boardRef }) });
-			move(dragMovingPiece);
-		}
-	};
+	// const grab = e => {
+	// 	setMouseDownPos({ x: e.clientX, y: e.clientY });
+	// 	if (!clickMovingPiece) {
+	// 		if (!e.target.className.includes(piecesClassName)) return;
+	// 		setDragMovingPiece({ image: e.target, source: getTileIndexInBoard({ e, boardRef }) });
+	// 		move(dragMovingPiece);
+	// 	}
+	// };
 
-	const release = e => {
-		const targetTileIndex = getTileIndexInBoard({ e, boardRef });
+	// const release = e => {
+	// 	const targetTileIndex = getTileIndexInBoard({ e, boardRef });
 
-		if (Math.abs(e.clientX - mouseDownPos.x) <= 8 && Math.abs(e.clientY - mouseDownPos.y) <= 8) {
-			if (!clickMovingPiece) {
-				setDragMovingPiece(null);
-				setHoveringTileIndex(null);
-				const clickTargetTile = getTileIndexInBoard({ e, boardRef });
-				if (boardState[7 - clickTargetTile.y][clickTargetTile.x]) setClickMovingPiece(clickTargetTile);
-			} else {
-				makePieceMove({ source: clickMovingPiece, target: targetTileIndex, boardState, setBoardState });
-				setClickMovingPiece(null);
-				setHoveringTileIndex(null);
-			}
-		}
-		clickMovingPiece && setClickMovingPiece(null);
-		setMouseDownPos(null);
+	// 	if (Math.abs(e.clientX - mouseDownPos.x) <= 8 && Math.abs(e.clientY - mouseDownPos.y) <= 8) {
+	// 		if (!clickMovingPiece) {
+	// 			setDragMovingPiece(null);
+	// 			setHoveringTileIndex(null);
+	// 			const clickTargetTile = getTileIndexInBoard({ e, boardRef });
+	// 			if (boardState[7 - clickTargetTile.y][clickTargetTile.x]) setClickMovingPiece(clickTargetTile);
+	// 		} else {
+	// 			makePieceMove({ source: clickMovingPiece, target: targetTileIndex, boardState, setBoardState });
+	// 			setClickMovingPiece(null);
+	// 			setHoveringTileIndex(null);
+	// 		}
+	// 	}
+	// 	clickMovingPiece && setClickMovingPiece(null);
+	// 	setMouseDownPos(null);
 
-		if (dragMovingPiece) {
-			if (isIndexInBoard(targetTileIndex) && !isSameTile(targetTileIndex, dragMovingPiece.source)) {
-				makePieceMove({ source: dragMovingPiece.source, target: targetTileIndex, boardState, setBoardState });
-			}
-		}
+	// 	if (dragMovingPiece) {
+	// 		if (isIndexInBoard(targetTileIndex) && !isSameTile(targetTileIndex, dragMovingPiece.source)) {
+	// 			makePieceMove({ source: dragMovingPiece.source, target: targetTileIndex, boardState, setBoardState });
+	// 		}
+	// 	}
 
-		if (dragMovingPiece && (!isIndexInBoard(targetTileIndex) || isSameTile(targetTileIndex, dragMovingPiece.source))) {
-			resetPiecePosition(dragMovingPiece);
-		}
+	// 	if (dragMovingPiece && (!isIndexInBoard(targetTileIndex) || isSameTile(targetTileIndex, dragMovingPiece.source))) {
+	// 		resetPiecePosition(dragMovingPiece);
+	// 	}
 
-		setDragMovingPiece(null);
-		setHoveringTileIndex(null);
-	};
+	// 	setDragMovingPiece(null);
+	// 	setHoveringTileIndex(null);
+	// };
 
-	const resetPiecePosition = piece => {
-		const imageStyle = piece.image.style;
-		imageStyle.position = 'relative';
-		imageStyle.left = 'auto';
-		imageStyle.top = 'auto';
-	};
+	// const resetPiecePosition = piece => {
+	// 	const imageStyle = piece.image.style;
+	// 	imageStyle.position = 'relative';
+	// 	imageStyle.left = 'auto';
+	// 	imageStyle.top = 'auto';
+	// };
 
-	const move = e => {
-		if (dragMovingPiece) {
-			const x = e.clientX;
-			const y = e.clientY;
-			dragMovingPiece.image.style.position = 'absolute';
-			dragMovingPiece.image.style.left = `calc(${x}px - 4.5vmin)`;
-			dragMovingPiece.image.style.top = `calc(${y}px - 4.5vmin)`;
-		}
+	// const move = e => {
+	// 	if (dragMovingPiece) {
+	// 		const x = e.clientX;
+	// 		const y = e.clientY;
+	// 		dragMovingPiece.image.style.position = 'absolute';
+	// 		dragMovingPiece.image.style.left = `calc(${x}px - 4.5vmin)`;
+	// 		dragMovingPiece.image.style.top = `calc(${y}px - 4.5vmin)`;
+	// 	}
 
-		if (dragMovingPiece || (clickMovingPiece && !mouseDownPos)) {
-			const tileIndexUnderMouse = getTileIndexInBoard({ e, boardRef });
-			if (tileIndexUnderMouse !== hoveringTileIndex) {
-				setHoveringTileIndex(tileIndexUnderMouse);
-			}
-		}
-	};
+	// 	if (dragMovingPiece || (clickMovingPiece && !mouseDownPos)) {
+	// 		const tileIndexUnderMouse = getTileIndexInBoard({ e, boardRef });
+	// 		if (tileIndexUnderMouse !== hoveringTileIndex) {
+	// 			setHoveringTileIndex(tileIndexUnderMouse);
+	// 		}
+	// 	}
+	// };
 
 	//rendering board
 
-	const renderTile = ({ tileColor, chessPiece, key }) => <Tile tileColor={tileColor} key={key} chessPiece={chessPiece} />;
+	const renderTile = ({ tileColor, chessPiece, key }) => (
+		<Tile tileColor={tileColor} key={key} chessPiece={chessPiece} piecesClassName={piecesClassName} />
+	);
 
 	return (
 		<div
-			onMouseDown={e => grab(e)}
-			onMouseMove={e => move(e)}
-			onMouseUp={e => release(e)}
+			onMouseDown={e => mm.mouseDownHandler(e)}
+			onMouseMove={e => mm.mouseMoveHandler(e)}
+			onMouseUp={e => mm.mouseUpHandler(e)}
 			style={{ marginLeft: '30vmin', marginTop: '10vmin', width: 'fit-content' }}
 			ref={boardRef}
 		>
@@ -94,16 +119,7 @@ export default function Board() {
 				<div key={rowIndex} style={{ display: 'flex', flexDirection: 'row' }}>
 					{row.map((cell, cellIndex) => {
 						const chessPiece = cell;
-						let tileColor = (cellIndex + rowIndex) % 2 === 1 ? 'dark' : 'light';
-						if (hoveringTileIndex?.x === cellIndex && hoveringTileIndex?.y === 7 - rowIndex) {
-							tileColor = 'target';
-						}
-						if (
-							(clickMovingPiece?.x === cellIndex && clickMovingPiece?.y === 7 - rowIndex) ||
-							(dragMovingPiece?.source.x === cellIndex && dragMovingPiece?.source.y === 7 - rowIndex)
-						) {
-							tileColor = 'source';
-						}
+						let tileColor = generateTileColor({ rowIndex, cellIndex, sourceTileState, targetTileState });
 						const cellKey = `${rowIndex}${cellIndex}`;
 						return renderTile({ tileColor, chessPiece, key: cellKey });
 					})}

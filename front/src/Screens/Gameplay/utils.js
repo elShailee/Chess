@@ -49,3 +49,14 @@ export const makePieceMove = ({ source, target, boardState, setBoardState }) => 
 	newBoardState[7 - source.y][source.x] = null;
 	setBoardState(newBoardState);
 };
+
+export const generateTileColor = ({ rowIndex, cellIndex, sourceTileState, targetTileState }) => {
+	let tileColor = (rowIndex + cellIndex) % 2 === 1 ? 'dark' : 'light';
+	if (targetTileState?.x === cellIndex && targetTileState?.y === rowIndex) {
+		tileColor = 'target';
+	}
+	if (sourceTileState?.source.x === cellIndex && sourceTileState?.source.y === rowIndex) {
+		tileColor = 'source';
+	}
+	return tileColor;
+};

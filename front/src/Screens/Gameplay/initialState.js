@@ -1,12 +1,12 @@
 const initialState = [
 	[
 		{ color: 'white', type: 'rook' },
-		{ color: 'white', type: 'bishop' },
 		{ color: 'white', type: 'knight' },
+		{ color: 'white', type: 'bishop' },
 		{ color: 'white', type: 'king' },
 		{ color: 'white', type: 'queen' },
-		{ color: 'white', type: 'knight' },
 		{ color: 'white', type: 'bishop' },
+		{ color: 'white', type: 'knight' },
 		{ color: 'white', type: 'rook' },
 	],
 	[
@@ -35,12 +35,12 @@ const initialState = [
 	],
 	[
 		{ color: 'black', type: 'rook' },
-		{ color: 'black', type: 'bishop' },
 		{ color: 'black', type: 'knight' },
-		{ color: 'black', type: 'queen' },
+		{ color: 'black', type: 'bishop' },
 		{ color: 'black', type: 'king' },
-		{ color: 'black', type: 'knight' },
+		{ color: 'black', type: 'queen' },
 		{ color: 'black', type: 'bishop' },
+		{ color: 'black', type: 'knight' },
 		{ color: 'black', type: 'rook' },
 	],
 ];
