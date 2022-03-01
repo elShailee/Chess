@@ -3,7 +3,7 @@ import Tile from './Tile';
 import initialState from './initialState';
 // import { getTileIndexInBoard, isIndexInBoard, isSameTile, makePieceMove } from './utils';
 import MovesManager from './MovesManager';
-import { copyBoardState, generateTileColor } from './utils';
+import { copyMatrix, generateTileColor } from './utils';
 
 export default function Board() {
 	const piecesClassName = 'draggablePieceImage';
@@ -14,9 +14,11 @@ export default function Board() {
 
 	const mm = useMemo(() => {
 		const moveAction = ({ source, target }) => {
-			const newBoardState = copyBoardState(boardState);
+			const newBoardState = copyMatrix(boardState);
 			newBoardState[target.y][target.x] = newBoardState[source.y][source.x];
-			newBoardState[source.y][source.y] = null;
+			if (source.x !== target.x || source.y !== target.y) {
+				newBoardState[source.y][source.x] = null;
+			}
 			setBoardState(newBoardState);
 		};
 
