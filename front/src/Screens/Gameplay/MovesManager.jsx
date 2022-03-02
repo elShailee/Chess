@@ -89,12 +89,6 @@ export default class MovesManager extends Component {
 			this.itemMovingByDrag = { draggable: e.target, source: assumedSourcePos };
 			this.setSourcePositionState(assumedSourcePos);
 		}
-		// this.mouseDownPos = { x: e.clientX, y: e.clientY };
-		// if (!this.clickMovingPiece) {
-		// 	if (!e.target.className.includes(this.draggablesClassName)) return;
-		// 	this.dragMovingPiece = { image: e.target, source: getTileIndexInBoard({ e, boardRef: this.droppableRef }) };
-		// 	this.mouseMoveHandler(e);
-		// }
 	};
 
 	moveItem = e => {
@@ -108,11 +102,6 @@ export default class MovesManager extends Component {
 		this.moveAction({ source, target });
 		this.setSourcePositionState(null);
 		this.setTargetPositionState(null);
-		// if (source.x === target.x && source.y === target.y) return;
-		// let newBoardState = copyBoardState(boardState);
-		// newBoardState[7 - target.y][target.x] = newBoardState[7 - source.y][source.x];
-		// newBoardState[7 - source.y][source.x] = null;
-		// setBoardState(newBoardState);
 	};
 
 	resetDraggablePosition = () => {
@@ -165,44 +154,6 @@ export default class MovesManager extends Component {
 		}
 
 		this.mouseDownPosition = null;
-		// const targetTileIndex = getTileIndexInBoard({ e, boardRef: this.droppableRef });
-		// if (Math.abs(e.clientX - this.mouseDownPos.x) <= 8 && Math.abs(e.clientY - this.mouseDownPos.y) <= 8) {
-		// 	if (!this.clickMovingPiece) {
-		// 		this.dragMovingPiece = null;
-		// 		this.hoveringTileIndex = null;
-		// 		const clickTargetTile = getTileIndexInBoard({ e, boardRef: this.droppableRef });
-		// 		if (this.boardState[7 - clickTargetTile.y][clickTargetTile.x]) this.clickMovingPiece = clickTargetTile;
-		// 	} else {
-		// 		makePieceMove({
-		// 			source: this.clickMovingPiece,
-		// 			target: targetTileIndex,
-		// 			boardState: this.boardState,
-		// 			setBoardState: this.setBoardState,
-		// 		});
-		// 		this.clickMovingPiece = null;
-		// 		this.hoveringTileIndex = null;
-		// 	}
-		// }
-		// this.clickMovingPiece && (this.clickMovingPiece = null);
-		// this.mouseDownPos = null;
-		// if (this.dragMovingPiece) {
-		// 	if (isIndexInBoard(targetTileIndex) && !isSameTile(targetTileIndex, this.dragMovingPiece.source)) {
-		// 		makePieceMove({
-		// 			source: this.dragMovingPiece.source,
-		// 			target: targetTileIndex,
-		// 			boardState: this.boardState,
-		// 			setBoardState: this.setBoardState,
-		// 		});
-		// 	}
-		// }
-		// if (
-		// 	this.dragMovingPiece &&
-		// 	(!isIndexInBoard(targetTileIndex) || isSameTile(targetTileIndex, this.dragMovingPiece.source))
-		// ) {
-		// 	this.resetPiecePosition(this.dragMovingPiece);
-		// }
-		// this.dragMovingPiece = null;
-		// this.hoveringTileIndex = null;
 	};
 
 	mouseMoveHandler = e => {
@@ -215,24 +166,5 @@ export default class MovesManager extends Component {
 			const target = this.detectTilePos(mousePos);
 			this.setTargetPositionState(target);
 		}
-		// 	if (this.dragMovingPiece) {
-		// 		const x = e.clientX;
-		// 		const y = e.clientY;
-		// 		this.dragMovingPiece.image.style.position = 'absolute';
-		// 		this.dragMovingPiece.image.style.left = `calc(${x}px - 4.5vmin)`;
-		// 		this.dragMovingPiece.image.style.top = `calc(${y}px - 4.5vmin)`;
-		// 	}
-		// 	if (this.dragMovingPiece || (this.clickMovingPiece && !this.mouseDownPos)) {
-		// 		const tileIndexUnderMouse = getTileIndexInBoard({ e, boardRef: this.droppableRef });
-		// 		if (tileIndexUnderMouse !== this.hoveringTileIndex) {
-		// 			this.hoveringTileIndex = tileIndexUnderMouse;
-		// 		}
-		// 	}
-		// };
-		// resetPiecePosition = piece => {
-		// 	const imageStyle = piece.image.style;
-		// 	imageStyle.position = 'relative';
-		// 	imageStyle.left = 'auto';
-		// 	imageStyle.top = 'auto';
 	};
 }
