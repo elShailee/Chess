@@ -1,35 +1,12 @@
-export const getTileIndexInBoard = ({ e, boardRef }) => {
-	const targetPos = { x: e?.clientX, y: e?.clientY };
-	const boardSize = { x: boardRef?.current.offsetWidth, y: boardRef?.current.offsetHeight };
-	const boardPos = { x: boardRef?.current.offsetLeft, y: boardRef?.current.offsetTop };
-
-	//check input completeness
-	if (!boardPos || !boardSize || !targetPos) {
-		console.log('please pass boardPos, boardSize and targetPos coords to getTileIndexInBoard.');
-		return { x: -1, y: -1 };
+export const generateTileColor = ({ rowIndex, cellIndex, sourceTileState, targetTileState }) => {
+	let tileColor = (rowIndex + cellIndex) % 2 === 1 ? 'dark' : 'light';
+	if (targetTileState?.x === cellIndex && targetTileState?.y === rowIndex) {
+		tileColor = 'target';
 	}
-
-	//validate input
-	if (
-		targetPos.x < boardPos.x ||
-		targetPos.y < boardPos.y ||
-		targetPos.x > boardPos.x + boardSize.x ||
-		targetPos.y > boardPos.y + boardSize.y
-	) {
-		return { x: -1, y: -1 };
+	if (sourceTileState?.x === cellIndex && sourceTileState?.y === rowIndex) {
+		tileColor = 'source';
 	}
-
-	const targetPosInBoard = { x: targetPos.x - boardPos.x, y: targetPos.y - boardPos.y };
-	const tileSize = { x: boardSize.x / 8, y: boardSize.y / 8 };
-	const targetTile = {
-		x: 7 - Math.floor((boardSize.x - targetPosInBoard.x) / tileSize.x),
-		y: Math.floor((boardSize.y - targetPosInBoard.y) / tileSize.y),
-	};
-	return targetTile;
-};
-
-export const isIndexInBoard = tileIndex => {
-	return tileIndex.x >= 0 && tileIndex.x < 8 && tileIndex.y >= 0 && tileIndex.y < 8;
+	return tileColor;
 };
 
 export const copyMatrix = boardState => {
@@ -42,21 +19,11 @@ export const copyMatrix = boardState => {
 
 export const isSameTile = (tileIndexA, tileIndexB) => tileIndexA.x === tileIndexB.x && tileIndexA.y === tileIndexB.y;
 
-export const makePieceMove = ({ source, target, boardState, setBoardState }) => {
-	if (source.x === target.x && source.y === target.y) return;
-	let newBoardState = copyMatrix(boardState);
-	newBoardState[7 - target.y][target.x] = newBoardState[7 - source.y][source.x];
-	newBoardState[7 - source.y][source.x] = null;
+export const pieceMoveAction = ({ source, target, boardState, setBoardState }) => {
+	const newBoardState = copyMatrix(boardState);
+	newBoardState[target.y][target.x] = newBoardState[source.y][source.x];
+	if (source.x !== target.x || source.y !== target.y) {
+		newBoardState[source.y][source.x] = null;
+	}
 	setBoardState(newBoardState);
-};
-
-export const generateTileColor = ({ rowIndex, cellIndex, sourceTileState, targetTileState }) => {
-	let tileColor = (rowIndex + cellIndex) % 2 === 1 ? 'dark' : 'light';
-	if (targetTileState?.x === cellIndex && targetTileState?.y === rowIndex) {
-		tileColor = 'target';
-	}
-	if (sourceTileState?.x === cellIndex && sourceTileState?.y === rowIndex) {
-		tileColor = 'source';
-	}
-	return tileColor;
 };

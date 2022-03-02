@@ -1,5 +1,4 @@
 import { Component } from 'react';
-// import { getTileIndexInBoard, isIndexInBoard, isSameTile, makePieceMove } from './utils';
 
 export default class MovesManager extends Component {
 	constructor({
