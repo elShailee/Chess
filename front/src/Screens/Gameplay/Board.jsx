@@ -26,6 +26,7 @@ export default function Board() {
 			droppableRef: boardRef,
 			draggablesClassName: piecesClassName,
 			draggblesPositionsMatrix: boardState,
+			clickDeltaInPx: 8,
 			moveAction,
 			setSourcePositionState: setSourceTileState,
 			setTargetPositionState: setTargetTileState,

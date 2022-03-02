@@ -6,6 +6,7 @@ export default class MovesManager extends Component {
 		droppableRef,
 		draggablesClassName,
 		draggblesPositionsMatrix,
+		clickDeltaInPx,
 		moveAction,
 		setSourcePositionState,
 		setTargetPositionState,
@@ -14,6 +15,7 @@ export default class MovesManager extends Component {
 		this.droppableRef = droppableRef;
 		this.draggablesClassName = draggablesClassName;
 		this.draggblesPositionsMatrix = draggblesPositionsMatrix;
+		this.clickDeltaInPx = clickDeltaInPx;
 		this.moveAction = moveAction;
 		this.setSourcePositionState = setSourcePositionState;
 		this.setTargetPositionState = setTargetPositionState;
@@ -84,11 +86,8 @@ export default class MovesManager extends Component {
 		}
 		if (!this.isMovingItemByClicks() && this.isDraggable(e.target)) {
 			const assumedSourcePos = this.detectTilePos(mousePosition);
-			if (this.isDraggable(e.target)) {
-				this.itemMovingByDrag = { draggable: e.target, source: assumedSourcePos };
-				this.setSourcePositionState(assumedSourcePos);
-				this.dragItem(e);
-			}
+			this.itemMovingByDrag = { draggable: e.target, source: assumedSourcePos };
+			this.setSourcePositionState(assumedSourcePos);
 		}
 		// this.mouseDownPos = { x: e.clientX, y: e.clientY };
 		// if (!this.clickMovingPiece) {
@@ -125,12 +124,47 @@ export default class MovesManager extends Component {
 		}
 	};
 
+	abortMovingByClicks = () => {
+		this.itemMovingByClicks = null;
+		this.setSourcePositionState(null);
+		this.setTargetPositionState(null);
+	};
+
+	isAClick = e => {
+		const mousePos = this.getMousePosition(e);
+		const xDelta = Math.abs(this.mouseDownPosition.x - mousePos.x);
+		const yDelta = Math.abs(this.mouseDownPosition.y - mousePos.y);
+		return xDelta <= this.clickDeltaInPx && yDelta <= this.clickDeltaInPx;
+	};
+
 	mouseUpHandler = e => {
+		if (this.isAClick(e) && this.isMovingItemByClicks()) {
+			const { source } = this.itemMovingByClicks;
+			const mousePos = this.getMousePosition(e);
+			const target = this.detectTilePos(mousePos);
+			this.moveAction({ source, target });
+			this.abortMovingByClicks();
+		}
+
+		if (this.isAClick(e) && !this.isMovingItemByClicks() && this.isDraggable(e.target)) {
+			this.resetDraggablePosition();
+			this.itemMovingByDrag = null;
+			const mousePos = this.getMousePosition(e);
+			const source = this.detectTilePos(mousePos);
+			this.itemMovingByClicks = { source };
+		}
+
+		if (this.isMovingItemByClicks() && !this.isAClick(e)) {
+			this.abortMovingByClicks();
+		}
+
 		if (this.isMovingItemByDrag()) {
 			this.resetDraggablePosition();
 			this.moveItem(e);
 			this.itemMovingByDrag = null;
 		}
+
+		this.mouseDownPosition = null;
 		// const targetTileIndex = getTileIndexInBoard({ e, boardRef: this.droppableRef });
 		// if (Math.abs(e.clientX - this.mouseDownPos.x) <= 8 && Math.abs(e.clientY - this.mouseDownPos.y) <= 8) {
 		// 	if (!this.clickMovingPiece) {
@@ -174,6 +208,12 @@ export default class MovesManager extends Component {
 	mouseMoveHandler = e => {
 		if (this.isMovingItemByDrag()) {
 			this.dragItem(e);
+		}
+
+		if (this.isMovingItemByClicks()) {
+			const mousePos = this.getMousePosition(e);
+			const target = this.detectTilePos(mousePos);
+			this.setTargetPositionState(target);
 		}
 		// 	if (this.dragMovingPiece) {
 		// 		const x = e.clientX;
