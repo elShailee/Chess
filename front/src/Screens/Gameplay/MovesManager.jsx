@@ -90,7 +90,7 @@ export default class MovesManager extends Component {
 	};
 
 	moveItem = e => {
-		const movingItem = this.itemMovingByDrag || this.itemMovingByDrag;
+		const movingItem = this.itemMovingByDrag || this.itemMovingByClicks;
 		if (!movingItem) return;
 		const { source } = movingItem;
 
@@ -110,12 +110,6 @@ export default class MovesManager extends Component {
 		}
 	};
 
-	abortMovingByClicks = () => {
-		this.itemMovingByClicks = null;
-		this.setSourcePositionState(null);
-		this.setTargetPositionState(null);
-	};
-
 	isAClick = e => {
 		const mousePos = this.getMousePosition(e);
 		const xDelta = Math.abs(this.mouseDownPosition.x - mousePos.x);
@@ -125,10 +119,13 @@ export default class MovesManager extends Component {
 
 	mouseUpHandler = e => {
 		if (this.isAClick(e) && this.isMovingItemByClicks()) {
-			const { source } = this.itemMovingByClicks;
-			const target = this.getTilePositionUnderMouse(e);
-			this.moveAction({ source, target });
-			this.abortMovingByClicks();
+			this.moveItem(e);
+			this.itemMovingByClicks = null;
+
+			// this is a patch, fix it.
+			this.mouseDownPosition = null;
+			return;
+			//end of patch
 		}
 
 		if (this.isAClick(e) && !this.isMovingItemByClicks() && this.isDraggable(e.target)) {
@@ -139,7 +136,7 @@ export default class MovesManager extends Component {
 		}
 
 		if (this.isMovingItemByClicks() && !this.isAClick(e)) {
-			this.abortMovingByClicks();
+			this.itemMovingByClicks = null;
 		}
 
 		if (this.isMovingItemByDrag()) {

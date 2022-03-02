@@ -17,13 +17,13 @@ export const copyMatrix = boardState => {
 	});
 };
 
-export const isSameTile = (tileIndexA, tileIndexB) => tileIndexA.x === tileIndexB.x && tileIndexA.y === tileIndexB.y;
+export const isSameTile = (tilePosA, tilePosB) => tilePosA.x === tilePosB.x && tilePosA.y === tilePosB.y;
 
 export const pieceMoveAction = ({ source, target, boardState, setBoardState }) => {
+	if (isSameTile(source, target)) return;
+
 	const newBoardState = copyMatrix(boardState);
 	newBoardState[target.y][target.x] = newBoardState[source.y][source.x];
-	if (source.x !== target.x || source.y !== target.y) {
-		newBoardState[source.y][source.x] = null;
-	}
+	newBoardState[source.y][source.x] = null;
 	setBoardState(newBoardState);
 };
