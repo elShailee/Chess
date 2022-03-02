@@ -41,7 +41,8 @@ export default class MovesManager extends Component {
 		return target?.className.includes(this.draggablesClassName);
 	};
 
-	detectTilePos = mousePosition => {
+	getTilePositionUnderMouse = e => {
+		const mousePosition = this.getMousePosition(e);
 		const droppablePos = { x: this.droppableRef.current.offsetLeft, y: this.droppableRef.current.offsetTop };
 		const droppableSizeInPx = { x: this.droppableRef.current.offsetWidth, y: this.droppableRef.current.offsetHeight };
 		const mousePosInDroppable = {
@@ -66,16 +67,14 @@ export default class MovesManager extends Component {
 	};
 
 	dragItem = e => {
-		const x = e.clientX;
-		const y = e.clientY;
+		const mousePos = this.getMousePosition(e);
 		const draggableWidth = this.itemMovingByDrag.draggable.offsetWidth;
 		const draggableHeight = this.itemMovingByDrag.draggable.offsetHeight;
 		this.itemMovingByDrag.draggable.style.position = 'absolute';
-		this.itemMovingByDrag.draggable.style.left = `calc(${x}px - ${draggableWidth / 2}px)`;
-		this.itemMovingByDrag.draggable.style.top = `calc(${y}px - ${draggableHeight / 2}px)`;
+		this.itemMovingByDrag.draggable.style.left = `calc(${mousePos.x}px - ${draggableWidth / 2}px)`;
+		this.itemMovingByDrag.draggable.style.top = `calc(${mousePos.y}px - ${draggableHeight / 2}px)`;
 
-		const mousePosition = this.getMousePosition(e);
-		const hoverTarget = this.detectTilePos(mousePosition);
+		const hoverTarget = this.getTilePositionUnderMouse(e);
 		this.setTargetPositionState(hoverTarget);
 	};
 
@@ -85,7 +84,7 @@ export default class MovesManager extends Component {
 			this.mouseDownPosition = mousePosition;
 		}
 		if (!this.isMovingItemByClicks() && this.isDraggable(e.target)) {
-			const assumedSourcePos = this.detectTilePos(mousePosition);
+			const assumedSourcePos = this.getTilePositionUnderMouse(e);
 			this.itemMovingByDrag = { draggable: e.target, source: assumedSourcePos };
 			this.setSourcePositionState(assumedSourcePos);
 		}
@@ -96,8 +95,7 @@ export default class MovesManager extends Component {
 		if (!movingItem) return;
 		const { source } = movingItem;
 
-		const mousePosition = this.getMousePosition(e);
-		const target = this.detectTilePos(mousePosition);
+		const target = this.getTilePositionUnderMouse(e);
 
 		this.moveAction({ source, target });
 		this.setSourcePositionState(null);
@@ -129,8 +127,7 @@ export default class MovesManager extends Component {
 	mouseUpHandler = e => {
 		if (this.isAClick(e) && this.isMovingItemByClicks()) {
 			const { source } = this.itemMovingByClicks;
-			const mousePos = this.getMousePosition(e);
-			const target = this.detectTilePos(mousePos);
+			const target = this.getTilePositionUnderMouse(e);
 			this.moveAction({ source, target });
 			this.abortMovingByClicks();
 		}
@@ -138,8 +135,7 @@ export default class MovesManager extends Component {
 		if (this.isAClick(e) && !this.isMovingItemByClicks() && this.isDraggable(e.target)) {
 			this.resetDraggablePosition();
 			this.itemMovingByDrag = null;
-			const mousePos = this.getMousePosition(e);
-			const source = this.detectTilePos(mousePos);
+			const source = this.getTilePositionUnderMouse(e);
 			this.itemMovingByClicks = { source };
 		}
 
@@ -162,8 +158,7 @@ export default class MovesManager extends Component {
 		}
 
 		if (this.isMovingItemByClicks()) {
-			const mousePos = this.getMousePosition(e);
-			const target = this.detectTilePos(mousePos);
+			const target = this.getTilePositionUnderMouse(e);
 			this.setTargetPositionState(target);
 		}
 	};
