@@ -40,6 +40,11 @@ export default class MovesManager extends Component {
 		return target?.className.includes(this.draggablesClassName);
 	};
 
+	resetSourceAndTargetStates = () => {
+		this.setSourcePositionState(null);
+		this.setTargetPositionState(null);
+	};
+
 	getTilePositionUnderMouse = e => {
 		const mousePosition = this.getMousePosition(e);
 		const droppablePos = { x: this.droppableRef.current.offsetLeft, y: this.droppableRef.current.offsetTop };
@@ -83,9 +88,9 @@ export default class MovesManager extends Component {
 			this.mouseDownPosition = mousePosition;
 		}
 		if (!this.isMovingItemByClicks() && this.isDraggable(e.target)) {
-			const assumedSourcePos = this.getTilePositionUnderMouse(e);
-			this.itemMovingByDrag = { draggable: e.target, source: assumedSourcePos };
-			this.setSourcePositionState(assumedSourcePos);
+			const source = this.getTilePositionUnderMouse(e);
+			this.itemMovingByDrag = { draggable: e.target, source };
+			this.setSourcePositionState(source);
 		}
 	};
 
@@ -97,8 +102,7 @@ export default class MovesManager extends Component {
 		const target = this.getTilePositionUnderMouse(e);
 
 		this.moveAction({ source, target });
-		this.setSourcePositionState(null);
-		this.setTargetPositionState(null);
+		this.resetSourceAndTargetStates();
 	};
 
 	resetDraggablePosition = () => {
@@ -118,25 +122,11 @@ export default class MovesManager extends Component {
 	};
 
 	mouseUpHandler = e => {
-		if (this.isAClick(e) && this.isMovingItemByClicks()) {
-			this.moveItem(e);
+		if (this.isAClick(e)) {
+			this.clickHandler(e);
+		} else {
 			this.itemMovingByClicks = null;
-
-			// this is a patch, fix it.
-			this.mouseDownPosition = null;
-			return;
-			//end of patch
-		}
-
-		if (this.isAClick(e) && !this.isMovingItemByClicks() && this.isDraggable(e.target)) {
-			this.resetDraggablePosition();
-			this.itemMovingByDrag = null;
-			const source = this.getTilePositionUnderMouse(e);
-			this.itemMovingByClicks = { source };
-		}
-
-		if (this.isMovingItemByClicks() && !this.isAClick(e)) {
-			this.itemMovingByClicks = null;
+			this.resetSourceAndTargetStates();
 		}
 
 		if (this.isMovingItemByDrag()) {
@@ -156,6 +146,18 @@ export default class MovesManager extends Component {
 		if (this.isMovingItemByClicks()) {
 			const target = this.getTilePositionUnderMouse(e);
 			this.setTargetPositionState(target);
+		}
+	};
+
+	clickHandler = e => {
+		if (this.isMovingItemByClicks()) {
+			this.moveItem(e);
+			this.itemMovingByClicks = null;
+		} else if (this.isDraggable(e.target)) {
+			this.resetDraggablePosition();
+			this.itemMovingByDrag = null;
+			const source = this.getTilePositionUnderMouse(e);
+			this.itemMovingByClicks = { source };
 		}
 	};
 }
