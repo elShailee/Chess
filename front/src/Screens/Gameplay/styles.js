@@ -1,11 +1,13 @@
 import styled from 'styled-components';
 
 export const StyledTile = styled.div`
+	//this property is responsible for marking source and target highlights
+	${({ backgroundColor }) => backgroundColor && `background-color: ${backgroundColor};`}
+
 	width: 10vmin;
 	height: 10vmin;
 	box-sizing: border-box;
 	border: 1px solid black;
-	${({ backgroundColor }) => backgroundColor && `background-color: ${backgroundColor};`}
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -28,7 +30,6 @@ export const PieceContainer = styled.div`
 	align-items: center;
 	justify-content: center;
 	text-align: center;
-	/* background-color: orange; */
 	user-select: none;
 	-webkit-user-drag: none;
 `;

@@ -1,11 +1,11 @@
 import React from 'react';
-import { lib } from 'Assets/pieces/lib';
+import { lib as piecesAssetsLib } from 'Assets/pieces/lib';
 import { PieceContainer, StyledPiece } from './styles';
 
-export default function Piece({ chessPiece, piecesClassName }) {
+export default function Piece({ chessPiece, piecesClassNameAddition }) {
 	return (
 		<PieceContainer>
-			<StyledPiece className={piecesClassName} src={lib[chessPiece.color][chessPiece.type]} />
+			<StyledPiece className={piecesClassNameAddition} src={piecesAssetsLib[chessPiece.color][chessPiece.type]} />
 		</PieceContainer>
 	);
 }

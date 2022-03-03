@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import Piece from './Piece';
 import { StyledTile } from './styles';
 
-export default function Tile({ tileColor, chessPiece, piecesClassName }) {
+export default function Tile({ tileColor, chessPiece, piecesClassNameAddition }) {
 	const memoizedTile = useMemo(() => {
 		const colorMatchLib = {
 			dark: 'bisque',
@@ -12,10 +12,10 @@ export default function Tile({ tileColor, chessPiece, piecesClassName }) {
 		};
 		return (
 			<StyledTile backgroundColor={colorMatchLib[tileColor]}>
-				{chessPiece && <Piece piecesClassName={piecesClassName} chessPiece={chessPiece} />}
+				{chessPiece && <Piece piecesClassNameAddition={piecesClassNameAddition} chessPiece={chessPiece} />}
 			</StyledTile>
 		);
-	}, [chessPiece, tileColor, piecesClassName]);
+	}, [chessPiece, tileColor, piecesClassNameAddition]);
 
 	return memoizedTile;
 }

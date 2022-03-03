@@ -5,28 +5,40 @@ import MovesManager from './MovesManager';
 import { pieceMoveAction, generateTileColor } from './utils';
 
 export default function Board() {
-	const piecesClassName = 'draggablePieceImage';
+	const draggablePiecesClassName = 'draggablePieceImage';
 	const boardRef = useRef(null);
 	const [boardState, setBoardState] = useState(initialState);
 	const [sourceTileState, setSourceTileState] = useState(null);
 	const [targetTileState, setTargetTileState] = useState(null);
 
-	const mm = useMemo(() => {
-		return new MovesManager({
-			droppableRef: boardRef,
-			draggablesClassName: piecesClassName,
-			draggblesPositionsMatrix: boardState,
-			clickDeltaInPx: 8,
-			moveAction: ({ source, target }) => pieceMoveAction({ source, target, boardState, setBoardState }),
-			setSourcePositionState: setSourceTileState,
-			setTargetPositionState: setTargetTileState,
-		});
-	}, [piecesClassName, boardState]);
-
-	const renderTile = ({ tileColor, chessPiece, key }) => (
-		<Tile tileColor={tileColor} key={key} chessPiece={chessPiece} piecesClassName={piecesClassName} />
+	const mm = useMemo(
+		() =>
+			new MovesManager({
+				droppableRef: boardRef,
+				draggablesClassName: draggablePiecesClassName,
+				draggblesPositionsMatrix: boardState,
+				clickDeltaInPx: 8,
+				moveAction: ({ source, target }) => pieceMoveAction({ source, target, boardState, setBoardState }),
+				setSourcePositionState: setSourceTileState,
+				setTargetPositionState: setTargetTileState,
+			}),
+		[draggablePiecesClassName, boardState],
 	);
 
+	const renderTile = ({ rowIndex, cell, cellIndex }) => {
+		let tileColor = generateTileColor({ rowIndex, cellIndex, sourceTileState, targetTileState });
+		const cellKey = `row:${rowIndex},col:${cellIndex}`;
+
+		return <Tile tileColor={tileColor} key={cellKey} chessPiece={cell} piecesClassNameAddition={draggablePiecesClassName} />;
+	};
+
+	const renderBoardRow = ({ row, rowIndex }) => (
+		<div key={rowIndex} style={{ display: 'flex', flexDirection: 'row' }}>
+			{row.map((cell, cellIndex) => {
+				return renderTile({ rowIndex, cell, cellIndex });
+			})}
+		</div>
+	);
 	return (
 		<div
 			onMouseDown={e => mm.mouseDownHandler(e)}
@@ -35,16 +47,7 @@ export default function Board() {
 			style={{ marginLeft: '30vmin', marginTop: '10vmin', width: 'fit-content' }}
 			ref={boardRef}
 		>
-			{boardState.map((row, rowIndex) => (
-				<div key={rowIndex} style={{ display: 'flex', flexDirection: 'row' }}>
-					{row.map((cell, cellIndex) => {
-						const chessPiece = cell;
-						let tileColor = generateTileColor({ rowIndex, cellIndex, sourceTileState, targetTileState });
-						const cellKey = `${rowIndex}${cellIndex}`;
-						return renderTile({ tileColor, chessPiece, key: cellKey });
-					})}
-				</div>
-			))}
+			{boardState.map((row, rowIndex) => renderBoardRow({ row, rowIndex }))}
 		</div>
 	);
 }
