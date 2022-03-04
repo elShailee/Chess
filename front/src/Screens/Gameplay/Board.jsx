@@ -16,7 +16,7 @@ export default function Board() {
 			new MovesManager({
 				droppableRef: boardRef,
 				draggablesClassName: draggablePiecesClassName,
-				draggblesPositionsMatrix: boardState,
+				draggablesMatrixSize: { rows: boardState.length, cols: boardState[0].length },
 				clickDeltaInPx: 8,
 				moveAction: ({ source, target }) => pieceMoveAction({ source, target, boardState, setBoardState }),
 				setSourcePositionState: setSourceTileState,

@@ -4,7 +4,7 @@ export default class MovesManager extends Component {
 	constructor({
 		droppableRef,
 		draggablesClassName,
-		draggblesPositionsMatrix,
+		draggablesMatrixSize,
 		clickDeltaInPx,
 		moveAction,
 		setSourcePositionState,
@@ -13,7 +13,7 @@ export default class MovesManager extends Component {
 		super();
 		this.droppableRef = droppableRef;
 		this.draggablesClassName = draggablesClassName;
-		this.draggblesPositionsMatrix = draggblesPositionsMatrix;
+		this.draggablesMatrixSize = draggablesMatrixSize;
 		this.clickDeltaInPx = clickDeltaInPx;
 		this.moveAction = moveAction;
 		this.setSourcePositionState = setSourcePositionState;
@@ -29,11 +29,11 @@ export default class MovesManager extends Component {
 	};
 
 	isMovingItemByClicks = () => {
-		return !!this.itemMovingByClicks;
+		return this.itemMovingByClicks && true;
 	};
 
 	isMovingItemByDrag = () => {
-		return !!this.itemMovingByDrag;
+		return this.itemMovingByDrag && true;
 	};
 
 	isDraggable = target => {
@@ -59,8 +59,8 @@ export default class MovesManager extends Component {
 			mousePosInDroppable.x <= droppableSizeInPx.x &&
 			mousePosInDroppable.y <= droppableSizeInPx.y;
 		const draggableContainerSize = {
-			x: droppableSizeInPx.x / this.draggblesPositionsMatrix[0].length,
-			y: droppableSizeInPx.y / this.draggblesPositionsMatrix.length,
+			x: droppableSizeInPx.x / this.draggablesMatrixSize.cols,
+			y: droppableSizeInPx.y / this.draggablesMatrixSize.rows,
 		};
 		const itemPos = {
 			x: Math.floor(mousePosInDroppable.x / draggableContainerSize.x),
@@ -83,6 +83,8 @@ export default class MovesManager extends Component {
 	};
 
 	mouseDownHandler = e => {
+		e.preventDefault();
+
 		const mousePosition = this.getMousePosition(e);
 		if (!this.mouseDownPosition) {
 			this.mouseDownPosition = mousePosition;
@@ -96,12 +98,13 @@ export default class MovesManager extends Component {
 
 	moveItem = e => {
 		const movingItem = this.itemMovingByDrag || this.itemMovingByClicks;
-		if (!movingItem) return;
 		const { source } = movingItem;
 
 		const target = this.getTilePositionUnderMouse(e);
 
-		this.moveAction({ source, target });
+		if (target.isDroppable) {
+			this.moveAction({ source, target });
+		}
 		this.resetSourceAndTargetStates();
 	};
 
@@ -122,6 +125,8 @@ export default class MovesManager extends Component {
 	};
 
 	mouseUpHandler = e => {
+		e.preventDefault();
+
 		if (this.isAClick(e)) {
 			this.clickHandler(e);
 		} else {
@@ -139,6 +144,8 @@ export default class MovesManager extends Component {
 	};
 
 	mouseMoveHandler = e => {
+		e.preventDefault();
+
 		if (this.isMovingItemByDrag()) {
 			this.dragItem(e);
 		}
