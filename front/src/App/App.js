@@ -1,5 +1,11 @@
+import Board from 'Screens/Gameplay/Board';
+
 function App() {
-	return <div>Blank React App</div>;
+	return (
+		<div>
+			<Board />
+		</div>
+	);
 }
 
 export default App;
